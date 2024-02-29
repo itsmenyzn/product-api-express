@@ -1,0 +1,19 @@
+{
+  "name": "product-api-express",
+  "version": "1.0.0",
+  "description": "learn and create product management api using express js",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Adhitya Mahardika",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.10.2",
+    "db-migrate-mysql": "^2.3.2",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.10.2"
+  }
+}
