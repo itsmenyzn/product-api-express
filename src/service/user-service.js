@@ -1,6 +1,7 @@
-import { PrismaClient, prismaClient } from "../application/database.js"
+import { prismaClient } from "../application/database.js"
 import { registerUserValidation } from "../validation/user-validation.js"
 import { validate } from "../validation/validation.js"
+import {ResponseError} from "../error/response-error.js";
 import bcrypt from "bcrypt"
 
 const register = async(request) => {
