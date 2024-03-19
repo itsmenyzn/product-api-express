@@ -26,3 +26,14 @@ export const getTestUser = async () => {
         }
     })
 }
+
+export const removeTestProductType = async () => {
+    await prismaClient.productType.deleteMany({
+        where: {
+            OR: [
+                { productTypeName: "Otomotif" },
+                { productTypeName: "Olahraga" }
+            ]
+        }
+    });
+}

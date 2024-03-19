@@ -1,5 +1,6 @@
 import express from "express"
 import userController from "../controller/user-controller.js"
+import productController from "../controller/product-controller.js"
 const publicRouter = new express.Router()
 publicRouter.get('/check', (req,res) => {
     res.status(200).json({
@@ -8,6 +9,8 @@ publicRouter.get('/check', (req,res) => {
 })
 publicRouter.post('/api/users', userController.register)
 publicRouter.post('/api/users/login', userController.login)
+
+publicRouter.post('/api/category', productController.registerProductType)
 
 export {
     publicRouter

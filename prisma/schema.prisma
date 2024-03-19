@@ -33,7 +33,7 @@ model ProductType {
 model Product {
   id            Int         @id @default(autoincrement())
   name          String      @db.VarChar(100)
-  price         Int         @db.Int()
+  price         Float       @db.Float()
   productTypeID Int         @db.Int()
   ProductType   ProductType @relation(fields: [productTypeID], references: [id])
 
