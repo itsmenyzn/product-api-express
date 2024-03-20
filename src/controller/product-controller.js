@@ -11,6 +11,30 @@ const registerProductType = async (req,res,next) => {
     }
 }
 
+const registerProduct = async (req,res,next) => {
+    try {
+        const result = await productService.addProduct(req.body)
+        res.status(200).json({
+            data:result
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
+const updateProduct = async (req,res,next) => {
+    try {
+        const result = await productService.updateProduct(req.body,req.params.id)
+        res.status(200).json({
+            data:result
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 export default {
-    registerProductType
+    registerProductType,
+    registerProduct,
+    updateProduct
 }

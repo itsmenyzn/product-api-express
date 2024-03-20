@@ -11,6 +11,8 @@ publicRouter.post('/api/users', userController.register)
 publicRouter.post('/api/users/login', userController.login)
 
 publicRouter.post('/api/category', productController.registerProductType)
+publicRouter.post('/api/product', productController.registerProduct)
+publicRouter.put('/api/product/:id', productController.updateProduct)
 
 export {
     publicRouter
