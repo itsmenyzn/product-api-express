@@ -37,7 +37,7 @@ const deleteProductType = async (req, res, next) => {
 
 const findProductType = async (req, res, next) => {
   try {
-    const result = await productService.findProductType(Number(req.params.id));
+    const result = await productService.findProductType(req.params.id);
     res.status(200).json({
       data: result,
     });

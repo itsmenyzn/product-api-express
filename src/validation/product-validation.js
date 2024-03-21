@@ -11,4 +11,10 @@ const registerProductValdiation = Joi.object({
   productTypeID: Joi.number().required(),
 });
 
-export { registerProductTypeValidation, registerProductValdiation };
+const findProductByID = Joi.number();
+
+export {
+  registerProductTypeValidation,
+  registerProductValdiation,
+  findProductByID,
+};

@@ -1,39 +1,41 @@
-import { prismaClient } from "../src/application/database"
-import bcrypt from "bcrypt"
+import { prismaClient } from "../src/application/database";
+import bcrypt from "bcrypt";
 export const removeTestUser = async () => {
-    await prismaClient.user.deleteMany({
-        where : {
-            username : "test"
-        }
-    })
-}
+  await prismaClient.user.deleteMany({
+    where: {
+      username: "test",
+    },
+  });
+};
 
 export const createTestUser = async () => {
-    await prismaClient.user.create({
-        data : {
-            username : "test",
-            password : await bcrypt.hash("test",10),
-            name:"test",
-            token:"test"
-        }
-    })
-}
+  await prismaClient.user.create({
+    data: {
+      username: "test",
+      password: await bcrypt.hash("test", 10),
+      name: "test",
+      token: "test",
+    },
+  });
+};
 
 export const getTestUser = async () => {
-    return prismaClient.user.findUnique({
-        where : {
-            username : "test",
-        }
-    })
-}
+  return prismaClient.user.findUnique({
+    where: {
+      username: "test",
+    },
+  });
+};
 
 export const removeTestProductType = async () => {
-    await prismaClient.productType.deleteMany({
-        where: {
-            OR: [
-                { productTypeName: "Otomotif" },
-                { productTypeName: "Olahraga" }
-            ]
-        }
-    });
-}
+  await prismaClient.productType.deleteMany({
+    where: {
+      OR: [
+        { productTypeName: "Otomotif" },
+        { productTypeName: "Olahraga" },
+        { productTypeName: "Category" },
+        { productTypeName: "TestProduct" },
+      ],
+    },
+  });
+};

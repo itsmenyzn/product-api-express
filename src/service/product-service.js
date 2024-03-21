@@ -1,6 +1,7 @@
 import { prismaClient } from "../application/database.js";
 import { validate } from "../validation/validation.js";
 import {
+  findProductByID,
   registerProductTypeValidation,
   registerProductValdiation,
 } from "../validation/product-validation.js";
@@ -20,21 +21,33 @@ const addProductType = async (request) => {
   return prismaClient.productType.create({
     data: product,
     select: {
+      id: true,
       productTypeName: true,
     },
   });
 };
 
-const findProductType = async (id) => {
+const findProductType = async (request) => {
+  const productID = validate(
+    findProductByID,
+    request,
+    "Invalid Parametere Given"
+  );
   const product = await prismaClient.productType.findUnique({
     where: {
-      id: Number(id),
+      id: productID,
       isDeleted: false,
     },
+    select: {
+      id: true,
+      productTypeName: true,
+    },
   });
+
   if (!product) {
     throw new ResponseError(404, "Product Doesnt Exists");
   }
+
   return product;
 };
 
@@ -64,10 +77,13 @@ const showProductType = async (page, limit, offset) => {
 };
 
 const deleteProductType = async (id) => {
+  console.log(id);
+  console.log(typeof id);
   await findProductType(id);
-  return prismaClient.product.update({
+  return prismaClient.productType.update({
     where: {
       id: Number(id),
+      isDeleted: false,
     },
     data: {
       isDeleted: true,
