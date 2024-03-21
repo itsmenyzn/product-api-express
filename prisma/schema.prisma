@@ -24,8 +24,9 @@ model User {
 
 model ProductType {
   id              Int       @id @default(autoincrement())
-  productTypeName String    @db.VarChar(20)
+  productTypeName String    @db.VarChar(20) @unique
   Product         Product[]
+  isDeleted       Boolean   @default(false)
 
   @@map("product_type")
 }
@@ -34,8 +35,9 @@ model Product {
   id            Int         @id @default(autoincrement())
   name          String      @db.VarChar(100)
   price         Float       @db.Float()
+  stock         Int         @db.Int() @default(0)
   productTypeID Int         @db.Int()
   ProductType   ProductType @relation(fields: [productTypeID], references: [id])
-
+  isDeleted     Boolean     @default(false)
   @@map("product")
 }
