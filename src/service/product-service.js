@@ -31,7 +31,7 @@ const findProductType = async (request) => {
   const productID = validate(
     findProductByID,
     request,
-    "Invalid Parametere Given"
+    "Invalid Parameter Given"
   );
   const product = await prismaClient.productType.findUnique({
     where: {
@@ -45,18 +45,38 @@ const findProductType = async (request) => {
   });
 
   if (!product) {
-    throw new ResponseError(404, "Product Doesnt Exists");
+    throw new ResponseError(404, "Product Type Doesnt Exists");
   }
 
   return product;
 };
 
 const showProductType = async (page, limit, offset) => {
-  offset = limit * page - limit;
-  const getTotalData = await prismaClient.productType.count();
+  page = page == "" ? 1 : Number(page);
+  limit = limit == "" ? 5 : Number(limit);
+  let skipped;
+  let defaultOffset;
+  if (offset == "") {
+    skipped = Number((page - 1) * limit);
+    defaultOffset = 0;
+  } else {
+    defaultOffset = offset;
+    if (offset == 1) {
+      skipped = Number(offset);
+    }
+    if (page != 1) {
+      skipped = Number(offset * page + 1);
+    } else {
+      skipped = Number(offset * page);
+    }
+  }
+  const getTotalData = await prismaClient.productType.count({
+    skip: defaultOffset,
+  });
+  const totalPage = Math.ceil(getTotalData / limit);
   const getProductData = await prismaClient.productType.findMany({
     take: limit,
-    skip: offset,
+    skip: skipped,
     orderBy: {
       id: "asc",
     },
@@ -64,11 +84,11 @@ const showProductType = async (page, limit, offset) => {
       isDeleted: false,
     },
   });
-  const totalPage = Math.ceil(getTotalData / limit);
+
   const productTypeData = {
     data: getProductData,
     limit: limit,
-    offset: offset,
+    offset: skipped,
     page: page,
     totalData: getTotalData,
     totalPage: totalPage,

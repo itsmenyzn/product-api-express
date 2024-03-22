@@ -39,3 +39,37 @@ export const removeTestProductType = async () => {
     },
   });
 };
+
+export const createProductTypeSeed = async () => {
+  await prismaClient.productType.createMany({
+    data: [
+      {
+        productTypeName: "Type1",
+      },
+      {
+        productTypeName: "Type2",
+      },
+      {
+        productTypeName: "Type3",
+      },
+      {
+        productTypeName: "Type4",
+      },
+      {
+        productTypeName: "Type5",
+      },
+      {
+        productTypeName: "Type6",
+      },
+    ],
+  });
+};
+export const removeProductTypeSeed = async () => {
+  await prismaClient.productType.deleteMany({
+    where: {
+      productTypeName: {
+        contains: "Type",
+      },
+    },
+  });
+};
