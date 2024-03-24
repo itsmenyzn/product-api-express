@@ -24,7 +24,7 @@ publicRouter.get(
   "/api/product/:page?/:limit?/:offset?",
   productController.showProduct
 );
-publicRouter.put("/api/product/:id", productController.updateProduct);
+publicRouter.patch("/api/product/:id", productController.updateProduct);
 publicRouter.delete("/api/product/:id", productController.deleteProduct);
 
 export { publicRouter };

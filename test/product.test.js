@@ -1,201 +1,336 @@
 import supertest from "supertest";
 import { web } from "../src/application/web";
 import {
-  createProductTypeSeed,
-  removeProductTypeSeed,
-  removeTestProductType,
+  createProductSeed,
+  createSingleProductType,
+  removeProductSeed,
+  removeProductTypeTest,
 } from "./test-util";
 
-// describe("POST /api/category", function () {
-//   beforeEach(async () => {
-//     await removeTestProductType();
-//   });
-//   test("should can register new product type", async () => {
-//     const result = await supertest(web).post("/api/category").send({
-//       productTypeName: "Otomotif",
-//     });
-//     expect(result.status).toBe(200);
-//     expect(result.body.data.productTypeName).toBe("Otomotif");
-//   });
-//   test("should reject register new product type due to invalid data type value", async () => {
-//     const result = await supertest(web).post("/api/category").send({
-//       productTypeName: 123,
-//     });
-//     expect(result.status).toBe(400);
-//     expect(result.body.errors).toBeDefined();
-//   });
-//   test("should reject register new product type due to invalid body", async () => {
-//     const result = await supertest(web).post("/api/category").send({
-//       randomBody: "Otomotif",
-//     });
-//     expect(result.status).toBe(400);
-//     expect(result.body.errors).toBeDefined();
-//   });
-//   test("should reject register new product type due to duplicate product type", async () => {
-//     const createDummy = await supertest(web).post("/api/category").send({
-//       productTypeName: "Olahraga",
-//     });
-//     expect(createDummy.status).toBe(200);
-//     expect(createDummy.body.data.productTypeName).toBe("Olahraga");
-
-//     const checkDuplicate = await supertest(web).post("/api/category").send({
-//       productTypeName: "Olahraga",
-//     });
-//     expect(checkDuplicate.status).toBe(409);
-//     expect(checkDuplicate.body.errors).toBeDefined();
-//   });
-
-//   afterEach(async () => {
-//     await removeTestProductType();
-//   });
-// });
-
-// describe("GET /api/category/:page?/:limit?/:offset?", function () {
-//   beforeEach(async () => {
-//     await removeProductTypeSeed();
-//     await createProductTypeSeed();
-//   });
-
-//   test("should give all product type", async () => {
-//     let result = await supertest(web).get("/api/category");
-//     expect(result.status).toBe(200);
-//     expect(result.body.data.totalData).toBe(6);
-//     expect(result.body.data.totalPage).toBe(2);
-//     expect(result.body.data.limit).toBe(5);
-//     expect(result.body.data.offset).toBe(0);
-//     for (const item of result.body.data.data) {
-//       expect(item.productTypeName).toContain("Type");
-//     }
-//   });
-//   test("should give product type on page 2", async () => {
-//     let result = await supertest(web).get("/api/category?page=2");
-//     console.log("Result aja", result.body);
-//     console.log("Pelerq", result.body.data);
-//     expect(result.status).toBe(200);
-//     expect(result.body.data.data).toHaveLength(1);
-//     expect(result.body.data.page).toBe(2);
-//     expect(result.body.data.limit).toBe(5);
-//     expect(result.body.data.offset).toBe(5);
-//     for (const item of result.body.data.data) {
-//       expect(item.productTypeName).toBe("Type6");
-//     }
-//   });
-//   test("should give product type with limit 10", async () => {
-//     let result = await supertest(web).get("/api/category?limit=10");
-//     console.log("Result aja", result.body);
-//     console.log("Pelerq", result.body.data);
-//     expect(result.status).toBe(200);
-//     expect(result.body.data.data).toHaveLength(6);
-//     expect(result.body.data.limit).toBe(10);
-//     expect(result.body.data.offset).toBe(0);
-//     expect(result.body.data.totalPage).toBe(1);
-//   });
-//   test("should give product type with offset 5", async () => {
-//     let result = await supertest(web).get("/api/category?offset=4");
-//     console.log("Result aja", result.body);
-//     console.log("Pelerq", result.body.data);
-//     expect(result.status).toBe(200);
-//     expect(result.body.data.data).toHaveLength(2);
-//     expect(result.body.data.limit).toBe(5);
-//     expect(result.body.data.offset).toBe(4);
-//     expect(result.body.data.totalPage).toBe(1);
-//   });
-//   test("should give product type with offset 1", async () => {
-//     let result = await supertest(web).get(
-//       "/api/category?offset=1&page=1&limit=2"
-//     );
-//     console.log("Result aja", result.body);
-//     console.log("Pelerq", result.body.data);
-//     expect(result.status).toBe(200);
-//     expect(result.body.data.data).toHaveLength(2);
-//     expect(result.body.data.limit).toBe(2);
-//     expect(result.body.data.offset).toBe(1);
-//     expect(result.body.data.totalPage).toBe(3);
-//   });
-//   test("should give product type with offset 2 on page 2 with limit 3", async () => {
-//     let result = await supertest(web).get(
-//       "/api/category?offset=2&page=2&limit=3"
-//     );
-//     console.log("Result aja", result.body);
-//     console.log("Pelerq", result.body.data);
-//     expect(result.status).toBe(200);
-//     expect(result.body.data.data).toHaveLength(1);
-//     expect(result.body.data.limit).toBe(3);
-//     expect(result.body.data.offset).toBe(5);
-//     expect(result.body.data.totalPage).toBe(2);
-//   });
-
-//   afterEach(async () => {
-//     await removeProductTypeSeed();
-//   });
-// });
-// describe("DELETE /api/category/:id", function () {
-//   beforeEach(async () => {
-//     await removeProductTypeSeed();
-//   });
-
-//   test("should can delete product by given valid id", async () => {
-//     let result = await supertest(web).post("/api/category").send({
-//       productTypeName: "TestType",
-//     });
-//     expect(result.status).toBe(200);
-//     expect(result.body.data.productTypeName).toBe("TestType");
-//     const id = result.body.data.id;
-//     result = await supertest(web).delete(`/api/category/${id}`);
-//     console.info("status : ", result.status);
-//     console.info("body : ", result.body);
-//     expect(result.status).toBe(200);
-//     result = await supertest(web).get(`/api/category/${id}`);
-//     expect(result.status).toBe(404);
-//   });
-//   test("should reject delete product due to invalid given id", async () => {
-//     let result = await supertest(web).post("/api/category").send({
-//       productTypeName: "TestType",
-//     });
-//     expect(result.status).toBe(200);
-//     expect(result.body.data.productTypeName).toBe("TestType");
-//     const id = 99999 + result.body.data.id;
-//     result = await supertest(web).delete(`/api/category/${id}`);
-//     expect(result.status).toBe(404);
-//     expect(result.body.errors).toBe("Product Type Doesnt Exists");
-//   });
-//   test("should reject delete product due to invalid parameter given", async () => {
-//     const result = await supertest(web).delete(`/api/category/asd`);
-//     expect(result.status).toBe(400);
-//     expect(result.body.errors).toBe("Invalid Parameter Given");
-//   });
-// });
-
-describe("GET /api/category/:id", function () {
-  test("should can give single product by given id", async () => {
-    let result = await supertest(web).post("/api/category").send({
-      productTypeName: "TestType",
+describe("POST /api/product", function () {
+  beforeEach(async () => {
+    await removeProductTypeTest();
+    await removeProductSeed();
+  });
+  test("should can register new product", async () => {
+    const productType = await createSingleProductType();
+    const result = await supertest(web).post("/api/product").send({
+      name: "TestProduct",
+      price: 90000,
+      stock: 10,
+      productTypeID: productType.id,
     });
     expect(result.status).toBe(200);
-    expect(result.body.data.productTypeName).toBe("TestType");
-    const id = result.body.data.id;
-    result = await supertest(web).get(`/api/category/${id}`);
+    expect(result.body.data.name).toBe("TestProduct");
+    removeProductTypeTest();
+  });
+  test("should reject register new product due to invalid body data type", async () => {
+    const productType = await createSingleProductType();
+    const result = await supertest(web).post("/api/product").send({
+      name: 123,
+      price: 90000,
+      stock: 10,
+      productTypeID: productType.id,
+    });
+    expect(result.status).toBe(400);
+    expect(result.body.errors).toBeDefined();
+    removeProductTypeTest();
+  });
+  test("should reject register new product due to missing required body data", async () => {
+    const productType = await createSingleProductType();
+    const result = await supertest(web).post("/api/product").send({
+      name: 123,
+      stock: 10,
+      productTypeID: productType.id,
+    });
+    expect(result.status).toBe(400);
+    expect(result.body.errors).toBeDefined();
+    removeProductTypeTest();
+  });
+  test("should reject register new product due to not found relation foreign key", async () => {
+    const productType = await createSingleProductType();
+    const result = await supertest(web)
+      .post("/api/product")
+      .send({
+        name: "TestProduct",
+        price: 90000,
+        stock: 10,
+        productTypeID: 123132 + productType.id,
+      });
+    expect(result.status).toBe(404);
+    expect(result.body.errors).toBeDefined();
+    removeProductTypeTest();
+  });
+});
+
+describe("GET /api/product/:id", function () {
+  beforeEach(async () => {
+    await removeProductTypeTest();
+    await removeProductSeed();
+  });
+  test("should can give single product by given id", async () => {
+    const productType = await createSingleProductType();
+    let result = await supertest(web).post("/api/product").send({
+      name: "TestProduct",
+      price: 90000,
+      stock: 10,
+      productTypeID: productType.id,
+    });
     expect(result.status).toBe(200);
-    expect(result.body.data.productTypeName).toBe("TestType");
+    expect(result.body.data.name).toBe("TestProduct");
+    const id = result.body.data.id;
+    result = await supertest(web).get(`/api/product/${id}`);
+    expect(result.status).toBe(200);
+    expect(result.body.data.name).toBe("TestProduct");
+    removeProductTypeTest();
   });
   test("should reject give single product due to invalid given id", async () => {
-    let result = await supertest(web).post("/api/category").send({
-      productTypeName: "TestType",
+    const productType = await createSingleProductType();
+    let result = await supertest(web).post("/api/product").send({
+      name: "TestProduct",
+      price: 90000,
+      stock: 10,
+      productTypeID: productType.id,
     });
     expect(result.status).toBe(200);
-    expect(result.body.data.productTypeName).toBe("TestType");
-    const id = 99999 + result.body.data.id;
-    result = await supertest(web).get(`/api/category/${id}`);
+    expect(result.body.data.name).toBe("TestProduct");
+    const id = 9999 + result.body.data.id;
+    result = await supertest(web).get(`/api/product/${id}`);
     expect(result.status).toBe(404);
-    expect(result.body.errors).toBe("Product Type Doesnt Exists");
+    expect(result.body.errors).toBe("Product Doesnt Exists");
+    removeProductTypeTest();
   });
   test("should reject give single product due to invalid parameter given", async () => {
-    const result = await supertest(web).get(`/api/category/asd`);
+    const result = await supertest(web).get(`/api/product/dsa`);
     expect(result.status).toBe(400);
     expect(result.body.errors).toBe("Invalid Parameter Given");
   });
 
   beforeEach(async () => {
-    await removeProductTypeSeed();
+    await removeProductTypeTest();
+  });
+});
+
+describe("PATCH /api/product/:id", function () {
+  beforeEach(async () => {
+    await removeProductSeed();
+    await removeProductTypeTest();
+  });
+  afterEach(async () => {
+    await removeProductSeed();
+    await removeProductTypeTest();
+  });
+  test("should can update single product by given id", async () => {
+    const productType = await createSingleProductType();
+    let result = await supertest(web).post("/api/product").send({
+      name: "Product",
+      price: 90000,
+      stock: 10,
+      productTypeID: productType.id,
+    });
+    expect(result.status).toBe(200);
+    expect(result.body.data.name).toBe("Product");
+    const id = result.body.data.id;
+    result = await supertest(web).patch(`/api/product/${id}`).send({
+      name: "Updated",
+      price: 9999,
+      stock: 99,
+    });
+    expect(result.status).toBe(200);
+    expect(result.body.data.name).toBe("Updated");
+    expect(result.body.data.price).toBe(9999);
+    expect(result.body.data.stock).toBe(99);
+    removeProductTypeTest();
+  });
+  test("should reject update single product due to invalid given id", async () => {
+    const result = await supertest(web).patch(`/api/product/asd`).send({
+      name: "Product",
+      price: 9999,
+      stock: 99,
+    });
+    expect(result.status).toBe(400);
+    expect(result.body.errors).toBeDefined();
+  });
+  test("should reject update single product due to invalid body parameter given", async () => {
+    const productType = await createSingleProductType();
+    let result = await supertest(web).post("/api/product").send({
+      name: "Product",
+      price: 90000,
+      stock: 10,
+      productTypeID: productType.id,
+    });
+    expect(result.status).toBe(200);
+    expect(result.body.data.name).toBe("Product");
+    const id = result.body.data.id;
+    result = await supertest(web).patch(`/api/product/${id}`).send({
+      name: 123313,
+      price: "9999",
+      stock: 99,
+    });
+    expect(result.status).toBe(400);
+    expect(result.body.errors).toBeDefined();
+    removeProductTypeTest();
+  });
+  test("should reject update single product due to product id not found", async () => {
+    const productType = await createSingleProductType();
+    let result = await supertest(web).post("/api/product").send({
+      name: "Product",
+      price: 90000,
+      stock: 10,
+      productTypeID: productType.id,
+    });
+    expect(result.status).toBe(200);
+    expect(result.body.data.name).toBe("Product");
+    const id = 12313 + result.body.data.id;
+    result = await supertest(web).patch(`/api/product/${id}`).send({
+      name: 123313,
+      price: "9999",
+      stock: 99,
+    });
+    expect(result.status).toBe(404);
+    expect(result.body.errors).toBeDefined();
+    removeProductTypeTest();
+  });
+
+  test("should reject give single product due to invalid given id", async () => {
+    const productType = await createSingleProductType();
+    let result = await supertest(web).post("/api/product").send({
+      name: "TestProduct",
+      price: 90000,
+      stock: 10,
+      productTypeID: productType.id,
+    });
+    expect(result.status).toBe(200);
+    expect(result.body.data.name).toBe("TestProduct");
+    const id = 9999 + result.body.data.id;
+    result = await supertest(web).get(`/api/product/${id}`);
+    expect(result.status).toBe(404);
+    expect(result.body.errors).toBe("Product Doesnt Exists");
+    removeProductTypeTest();
+  });
+  test("should reject give single product due to invalid parameter given", async () => {
+    const result = await supertest(web).get(`/api/product/dsa`);
+    expect(result.status).toBe(400);
+    expect(result.body.errors).toBe("Invalid Parameter Given");
+  });
+});
+
+describe("DELETE /api/product/:id", function () {
+  beforeEach(async () => {
+    await removeProductTypeTest();
+    await removeProductSeed();
+  });
+  test("should can delete single product by given id", async () => {
+    const productType = await createSingleProductType();
+    let result = await supertest(web).post("/api/product").send({
+      name: "TestProduct",
+      price: 90000,
+      stock: 10,
+      productTypeID: productType.id,
+    });
+    expect(result.status).toBe(200);
+    expect(result.body.data.name).toBe("TestProduct");
+    const id = result.body.data.id;
+    result = await supertest(web).delete(`/api/product/${id}`);
+    expect(result.status).toBe(200);
+    result = await supertest(web).get(`/api/product/${id}`);
+    expect(result.status).toBe(404);
+    expect(result.body.errors).toBeDefined();
+    removeProductTypeTest();
+  });
+  test("should reject delete single product due to product not found", async () => {
+    const productType = await createSingleProductType();
+    let result = await supertest(web).post("/api/product").send({
+      name: "TestProduct",
+      price: 90000,
+      stock: 10,
+      productTypeID: productType.id,
+    });
+    expect(result.status).toBe(200);
+    expect(result.body.data.name).toBe("TestProduct");
+    const id = 9999 + result.body.data.id;
+    result = await supertest(web).delete(`/api/product/${id}`);
+    expect(result.status).toBe(404);
+    expect(result.body.errors).toBeDefined();
+    removeProductTypeTest();
+  });
+  test("should reject delete single product due to invalid parameter given", async () => {
+    const result = await supertest(web).delete(`/api/product/asd`);
+    expect(result.status).toBe(400);
+    expect(result.body.errors).toBeDefined();
+  });
+
+  beforeEach(async () => {
+    await removeProductTypeTest();
+  });
+});
+
+describe("GET /api/product/:page?/:limit?/:offset?", function () {
+  beforeEach(async () => {
+    await removeProductTypeTest();
+    await createProductSeed();
+  });
+  afterEach(async () => {
+    await removeProductTypeTest();
+    await removeProductSeed();
+  });
+
+  test("should give all product", async () => {
+    let result = await supertest(web).get("/api/product");
+    expect(result.status).toBe(200);
+    expect(result.body.data.totalData).toBe(6);
+    expect(result.body.data.totalPage).toBe(2);
+    expect(result.body.data.limit).toBe(5);
+    expect(result.body.data.offset).toBe(0);
+    for (const item of result.body.data.data) {
+      expect(item.name).toContain("Product");
+    }
+  });
+  test("should give product on page 2", async () => {
+    let result = await supertest(web).get("/api/product?page=2");
+    expect(result.status).toBe(200);
+    expect(result.body.data.data).toHaveLength(1);
+    expect(result.body.data.page).toBe(2);
+    expect(result.body.data.limit).toBe(5);
+    expect(result.body.data.offset).toBe(5);
+    for (const item of result.body.data.data) {
+      expect(item.name).toContain("TestProduct6");
+    }
+  });
+  test("should give product with limit 10", async () => {
+    let result = await supertest(web).get("/api/product?limit=10");
+    expect(result.status).toBe(200);
+    expect(result.body.data.data).toHaveLength(6);
+    expect(result.body.data.limit).toBe(10);
+    expect(result.body.data.offset).toBe(0);
+    expect(result.body.data.totalPage).toBe(1);
+  });
+  test("should give product with offset 5", async () => {
+    let result = await supertest(web).get("/api/product?offset=4");
+    expect(result.status).toBe(200);
+    expect(result.body.data.data).toHaveLength(2);
+    expect(result.body.data.limit).toBe(5);
+    expect(result.body.data.offset).toBe(4);
+    expect(result.body.data.totalPage).toBe(1);
+  });
+  test("should give product with offset 1", async () => {
+    let result = await supertest(web).get(
+      "/api/product?offset=1&page=1&limit=2"
+    );
+    expect(result.status).toBe(200);
+    expect(result.body.data.data).toHaveLength(2);
+    expect(result.body.data.limit).toBe(2);
+    expect(result.body.data.offset).toBe(1);
+    expect(result.body.data.totalPage).toBe(3);
+  });
+  test("should give product with offset 2 on page 2 with limit 3", async () => {
+    let result = await supertest(web).get(
+      "/api/product?offset=2&page=2&limit=3"
+    );
+    expect(result.status).toBe(200);
+    expect(result.body.data.data).toHaveLength(1);
+    expect(result.body.data.limit).toBe(3);
+    expect(result.body.data.offset).toBe(5);
+    expect(result.body.data.totalPage).toBe(2);
   });
 });

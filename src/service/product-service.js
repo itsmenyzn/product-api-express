@@ -4,6 +4,7 @@ import {
   findProductByID,
   registerProductTypeValidation,
   registerProductValdiation,
+  updateProductValidation,
 } from "../validation/product-validation.js";
 import { ResponseError } from "../error/response-error.js";
 
@@ -15,7 +16,7 @@ const addProductType = async (request) => {
       isDeleted: false,
     },
   });
-  if (checkProduct != null) {
+  if (checkProduct) {
     throw new ResponseError(409, "Product Type Already Exists");
   }
   return prismaClient.productType.create({
@@ -72,6 +73,9 @@ const showProductType = async (page, limit, offset) => {
   }
   const getTotalData = await prismaClient.productType.count({
     skip: defaultOffset,
+    where: {
+      isDeleted: false,
+    },
   });
   const totalPage = Math.ceil(getTotalData / limit);
   const getProductData = await prismaClient.productType.findMany({
@@ -112,10 +116,18 @@ const deleteProductType = async (id) => {
 };
 
 const findProduct = async (id) => {
+  const request = validate(findProductByID, id, "Invalid Parameter Given");
   const product = await prismaClient.product.findUnique({
     where: {
-      id: Number(id),
+      id: Number(request),
       isDeleted: false,
+    },
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      stock: true,
+      ProductType: true,
     },
   });
   if (!product) {
@@ -149,6 +161,7 @@ const addProduct = async (request) => {
   });
 
   const productData = {
+    id: product.id,
     name: product.name,
     price: product.price,
     productTypeName: product.ProductType.productTypeName,
@@ -158,7 +171,7 @@ const addProduct = async (request) => {
 
 const updateProduct = async (request, id) => {
   await findProduct(id);
-  const productData = validate(registerProductValdiation, request);
+  const productData = validate(updateProductValidation, request);
   return prismaClient.product.update({
     data: productData,
     where: {
@@ -167,17 +180,41 @@ const updateProduct = async (request, id) => {
     select: {
       name: true,
       price: true,
+      stock: true,
       ProductType: true,
     },
   });
 };
 
 const showProduct = async (page, limit, offset) => {
-  offset = limit * page - limit;
-  const getTotalData = await prismaClient.product.count();
-  const getData = await prismaClient.product.findMany({
+  page = page == "" ? 1 : Number(page);
+  limit = limit == "" ? 5 : Number(limit);
+  let skipped;
+  let defaultOffset;
+  if (offset == "") {
+    skipped = Number((page - 1) * limit);
+    defaultOffset = 0;
+  } else {
+    defaultOffset = offset;
+    if (offset == 1) {
+      skipped = Number(offset);
+    }
+    if (page != 1) {
+      skipped = Number(offset * page + 1);
+    } else {
+      skipped = Number(offset * page);
+    }
+  }
+  const getTotalData = await prismaClient.product.count({
+    skip: defaultOffset,
+    where: {
+      isDeleted: false,
+    },
+  });
+  const totalPage = Math.ceil(getTotalData / limit);
+  const getProductData = await prismaClient.product.findMany({
     take: limit,
-    skip: offset,
+    skip: skipped,
     orderBy: {
       id: "asc",
     },
@@ -185,11 +222,10 @@ const showProduct = async (page, limit, offset) => {
       isDeleted: false,
     },
   });
-  const totalPage = Math.ceil(getTotalData / limit);
   const productData = {
-    data: getData,
+    data: getProductData,
     limit: limit,
-    offset: offset,
+    offset: skipped,
     page: page,
     totalData: getTotalData,
     totalPage: totalPage,

@@ -24,7 +24,7 @@ model User {
 
 model ProductType {
   id              Int       @id @default(autoincrement())
-  productTypeName String    @db.VarChar(20) @unique
+  productTypeName String    @db.VarChar(20)
   Product         Product[]
   isDeleted       Boolean   @default(false)
 

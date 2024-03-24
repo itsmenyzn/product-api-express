@@ -1,5 +1,6 @@
 import { prismaClient } from "../src/application/database";
 import bcrypt from "bcrypt";
+import productService from "../src/service/product-service";
 export const removeTestUser = async () => {
   await prismaClient.user.deleteMany({
     where: {
@@ -40,8 +41,31 @@ export const removeTestProductType = async () => {
   });
 };
 
+export const removeProductTypeSeed = async () => {
+  return prismaClient.productType.updateMany({
+    data: {
+      isDeleted: true,
+    },
+    where: {
+      productTypeName: {
+        contains: "Type",
+      },
+    },
+  });
+};
+export const removeProductTypeTest = async () => {
+  return prismaClient.productType.updateMany({
+    data: {
+      isDeleted: true,
+    },
+    where: {
+      productTypeName: "Test",
+    },
+  });
+};
+
 export const createProductTypeSeed = async () => {
-  await prismaClient.productType.createMany({
+  return prismaClient.productType.createMany({
     data: [
       {
         productTypeName: "Type1",
@@ -64,12 +88,83 @@ export const createProductTypeSeed = async () => {
     ],
   });
 };
-export const removeProductTypeSeed = async () => {
-  await prismaClient.productType.deleteMany({
-    where: {
-      productTypeName: {
-        contains: "Type",
-      },
+
+export const createSingleProductType = async () => {
+  const request = { productTypeName: "Test" };
+  return productService.addProductType(request);
+  // return prismaClient.productType.create({
+  //   data: {
+  //     productTypeName: "TypeTest",
+  //   },
+  //   select: {
+  //     id: true,
+  //     productTypeName: true,
+  //   },
+  // })
+};
+
+export const removeProductSeed = async () => {
+  await prismaClient.product.updateMany({
+    data: {
+      isDeleted: true,
     },
+    where: {
+      OR: [
+        {
+          name: {
+            contains: "Product",
+          },
+        },
+        {
+          name: {
+            contains: "Updated",
+          },
+        },
+      ],
+    },
+  });
+};
+
+export const createProductSeed = async () => {
+  const productType = await createSingleProductType();
+  await prismaClient.product.createMany({
+    data: [
+      {
+        name: "TestProduct1",
+        price: 90000,
+        stock: 10,
+        productTypeID: productType.id,
+      },
+      {
+        name: "TestProduct2",
+        price: 90000,
+        stock: 10,
+        productTypeID: productType.id,
+      },
+      {
+        name: "TestProduct3",
+        price: 90000,
+        stock: 10,
+        productTypeID: productType.id,
+      },
+      {
+        name: "TestProduct4",
+        price: 90000,
+        stock: 10,
+        productTypeID: productType.id,
+      },
+      {
+        name: "TestProduct5",
+        price: 90000,
+        stock: 10,
+        productTypeID: productType.id,
+      },
+      {
+        name: "TestProduct6",
+        price: 90000,
+        stock: 10,
+        productTypeID: productType.id,
+      },
+    ],
   });
 };
